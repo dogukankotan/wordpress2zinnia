@@ -293,7 +293,7 @@ class Command(LabelCommand):
                 item_node.find('{%s}post_date_gmt' % WP_NS).text,
                 '%Y-%m-%d %H:%M:%S')
         except ValueError as error:
-            print 'Import entry error: {}'.format(error)
+            print('Import entry error: {}'.format(error))
 
             creation_date = datetime.now()
 
@@ -345,7 +345,7 @@ class Command(LabelCommand):
                     '{http://purl.org/dc/elements/1.1/}creator').text])
                 entry.sites.add(self.SITE)
             except KeyError as error:
-                print 'Import entry error: {}'.format(error)
+                print('Import entry error: {}'.format(error))
 
         return entry, created
 
@@ -395,6 +395,11 @@ class Command(LabelCommand):
                 self.write_out(' > %s... ' % title)
                 image_url = item.find('{%s}attachment_url' % WP_NS).text
                 img_tmp = NamedTemporaryFile(delete=True)
+                import urllib.parse
+                image_url = urllib.parse.urlsplit(image_url)
+                image_url = list(image_url)
+                image_url[2] = urllib.parse.quote(image_url[2])
+                image_url = urllib.parse.urlunsplit(image_url)
                 img_tmp.write(urlopen(image_url).read())
                 img_tmp.flush()
                 entry.image.save(os.path.basename(image_url),
